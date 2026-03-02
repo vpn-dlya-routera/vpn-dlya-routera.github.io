@@ -1,0 +1,45 @@
+<div id="editor-panel" style="position: fixed; bottom: 20px; right: 20px; background: #333; padding: 10px; border-radius: 8px; z-index: 9999; display: flex; gap: 10px;">
+    <button id="edit-btn" style="cursor: pointer; padding: 8px;">Включить правку</button>
+    <button id="save-btn" style="cursor: pointer; padding: 8px; display: none; background: #28a745; color: white; border: none;">Скачать результат</button>
+</div>
+
+<script>
+    const editBtn = document.getElementById('edit-btn');
+    const saveBtn = document.getElementById('save-btn');
+    let isEditing = false;
+
+    editBtn.onclick = function() {
+        isEditing = !isEditing;
+        document.body.contentEditable = isEditing;
+        
+        if (isEditing) {
+            this.innerText = 'Выключить правку';
+            this.style.background = '#ffc107';
+            saveBtn.style.display = 'block';
+            alert('Режим редактирования включен! Теперь просто кликайте на текст и меняйте его.');
+        } else {
+            this.innerText = 'Включить правку';
+            this.style.background = '';
+            saveBtn.style.display = 'none';
+        }
+    };
+
+    saveBtn.onclick = function() {
+        // Убираем нашу панель перед сохранением, чтобы она не попала в файл
+        const panel = document.getElementById('editor-panel');
+        panel.style.display = 'none';
+        document.body.contentEditable = false;
+
+        const htmlContent = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+        const blob = new Blob([htmlContent], { type: 'text/html' });
+        const a = document.createElement('a');
+        
+        a.href = URL.createObjectURL(blob);
+        a.download = 'updated_index.html';
+        a.click();
+
+        // Возвращаем панель обратно
+        panel.style.display = 'flex';
+        if (isEditing) document.body.contentEditable = true;
+    };
+</script>
